@@ -141,10 +141,6 @@ public class Pedido {
         }
     }
 
-    public boolean insumosReservados() {
-        return status == StatusPedido.EM_TRIAGEM;
-    }
-
     public void iniciarProducao() {
         if (status == StatusPedido.AGUARDANDO_INSUMO) {
             throw new DomainException("O pedido " + codigo + " ainda aguarda insumos e não pode entrar em produção.");
