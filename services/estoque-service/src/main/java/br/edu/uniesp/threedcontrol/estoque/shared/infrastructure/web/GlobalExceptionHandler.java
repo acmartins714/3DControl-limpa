@@ -1,6 +1,5 @@
 package br.edu.uniesp.threedcontrol.estoque.shared.infrastructure.web;
 
-import br.edu.uniesp.threedcontrol.estoque.shared.application.IntegracaoException;
 import br.edu.uniesp.threedcontrol.estoque.shared.domain.DomainException;
 import br.edu.uniesp.threedcontrol.estoque.shared.domain.RecursoNaoEncontradoException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -27,11 +26,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DomainException.class)
     ProblemDetail regraDeNegocio(DomainException e) {
         return problema(HttpStatus.UNPROCESSABLE_ENTITY, "Regra de negócio violada", e.getMessage());
-    }
-
-    @ExceptionHandler(IntegracaoException.class)
-    ProblemDetail integracao(IntegracaoException e) {
-        return problema(HttpStatus.SERVICE_UNAVAILABLE, "Serviço dependente indisponível", e.getMessage());
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)

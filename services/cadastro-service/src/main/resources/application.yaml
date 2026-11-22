@@ -2,11 +2,6 @@ server:
   port: ${SERVER_PORT:8081}
 
 spring:
-  # Falha rápido quando um serviço dependente cai (evita requisições presas no timeout do SO)
-  http:
-    clients:
-      connect-timeout: 2s
-      read-timeout: 10s
   application:
     name: cadastro-service
   datasource:
