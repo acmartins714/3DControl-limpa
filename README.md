@@ -9,6 +9,10 @@ produção e financeiro.
 > Professor: Jonas Bernadino de Lima
 > Grupo: Alexandre Chaves Martins · Hrasam Hussein Gomes Monteiro · Luana Silva · Victor Melquiades Leite
 
+> **Esta é a versão com Arquitetura Limpa** (camadas `domain` / `application` / `infrastructure`, portas e
+> adaptadores). A versão simplificada, com Controller → Service → Repository e as mesmas funcionalidades,
+> está em [acmartins714/3DControl](https://github.com/acmartins714/3DControl).
+
 ---
 
 ## Sumário
@@ -388,7 +392,7 @@ Roteiro de inicialização, passo a passo.
 - **JDK 21 ou mais novo** e **IntelliJ IDEA**, se for usar a Opção B.
 - Código do projeto:
   ```bash
-  git clone https://github.com/acmartins714/3DControl.git
+  git clone https://github.com/acmartins714/3DControl-limpa.git
   ```
 
 ### 1. Abra o Docker Desktop
