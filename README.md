@@ -152,7 +152,38 @@ Cada feature é dividida em três camadas, com a **regra da dependência** apont
   interface `EstoqueGateway`, e não do HTTP. Trocar REST por mensageria no futuro significa escrever um
   novo adaptador, sem tocar em nenhuma regra de negócio.
 - **Entidade de domínio ≠ entidade JPA.** O mapeamento fica no adaptador (`PedidoJpa.from()` /
-  `toDomain()`), evitando que anotações e restrições do ORM "vazem" para as regras.
+  `toDomain()`), evitando que anotações e restrições do ORM "vazem" para as regras (detalhado a seguir).
+
+#### Por que existem duas classes para a mesma entidade (ex.: `Cliente` e `ClienteJpaEntity`)
+
+As duas representam o cliente, mas com responsabilidades diferentes:
+
+| | `cliente/domain/Cliente.java` | `cliente/infrastructure/persistence/ClienteJpaEntity.java` |
+|---|---|---|
+| Responde a | O que um cliente **é** para o negócio | Como um cliente **é gravado** no banco |
+| Dependências | Java puro (só `DomainException`, do próprio projeto) | JPA: `@Entity`, `@Table(name = "cliente")`, `@Id`, `@Column`, `@Enumerated` |
+| Conteúdo | **Regras de negócio**: nome obrigatório, ao menos um contato (telefone ou e-mail), canal preferencial obrigatório | Apenas o mapeamento para a tabela do PostgreSQL, sem regra de negócio |
+| Comportamento | `novo()`, `atualizar()`, `inativar()`. Só é criado por esses métodos, então nunca existe um cliente inválido | Conversão entre os dois modelos: `from(Cliente)` ao salvar, `toDomain()` ao ler |
+
+**Por que não usar uma classe só?** Daria certo, e muitos projetos Spring fazem assim. Separar traz três
+vantagens:
+
+1. **O negócio não depende da tecnologia.** Se o banco, o nome de uma coluna ou o próprio JPA mudarem,
+   só a classe de persistência muda. `Cliente` e suas regras continuam iguais.
+2. **As regras não podem ser contornadas.** O JPA exige um construtor vazio e costuma pedir setters, o
+   que permitiria criar um cliente vazio ou alterar um campo sem passar pela validação. Na classe de
+   domínio isso não acontece.
+3. **Os testes ficam simples.** Os testes de regra de negócio usam só as classes de domínio, sem subir o
+   Spring nem o banco. Por isso os testes unitários rodam em segundos.
+
+O custo é ter duas classes parecidas e o código que converte uma na outra. Em um sistema pequeno isso
+pode parecer exagero, mas é o que a Arquitetura Limpa propõe: o centro do sistema (o domínio) não conhece
+os detalhes externos (banco, framework).
+
+O mesmo padrão vale para todas as entidades. Em `cadastro-service` as classes JPA têm o sufixo
+`JpaEntity` (`InsumoJpaEntity`, `ProdutoJpaEntity`). Nos demais serviços ficam agrupadas num arquivo
+`*Persistence.java`, com o sufixo `Jpa` (por exemplo, `PedidoJpa` em `PedidoPersistence.java` e
+`ItemEstoqueJpa` em `EstoqueJpaEntities.java`).
 
 ### 2.4 Decisões complementares
 
